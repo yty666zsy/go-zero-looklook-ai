@@ -29,3 +29,14 @@ type (
 		ReturnCode string `json:"return_code"`
 	}
 )
+
+// 开发环境模拟支付：跳过微信支付，直接把订单置为已支付
+type (
+	MockPayReq {
+		OrderSn string `json:"orderSn"`
+	}
+	MockPayResp {
+		OrderSn    string `json:"orderSn"`
+		TradeState int64  `json:"tradeState"`
+	}
+)

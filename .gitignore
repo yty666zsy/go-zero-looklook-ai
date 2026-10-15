@@ -17,4 +17,24 @@ data/*
 .vscode
 .vscode/
 
+# 本机开发产物（后端二进制 / 运行日志）
+.local-bin/
+deploy/local-dev/logs/
+
+# 本机生成的运行配置（含数据库/Redis 口令与模型密钥，绝不提交）
+deploy/local-dev/
+
+# 密钥 / 环境变量
+.env
+.env.*
+!.env.example
+
+# 前端
+web/node_modules/
+web/dist/
+web/.vite/
+admin/node_modules/
+admin/dist/
+admin/.vite/
+
 

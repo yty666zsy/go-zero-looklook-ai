@@ -6,21 +6,56 @@ info(
 	version: "v1"
 )
 
+// 民宿卡片 / 详情
 type Homestay {
-	Id                  int64   `json:"id"`
-	Title               string  `json:"title"`
-	SubTitle            string  `json:"subTitle"`
-	Banner              string  `json:"banner"`
-	Info                string  `json:"info"`
-	PeopleNum           int64   `json:"peopleNum"`           //容纳人的数量
-	HomestayBusinessId  int64   `json:"homestayBusinessId"`  //店铺id
-	UserId              int64   `json:"userId"`              //房东id
-	RowState            int64   `json:"rowState"`            //0:下架 1:上架
-	RowType             int64   `json:"rowType"`             //售卖类型0：按房间出售 1:按人次出售
-	FoodInfo            string  `json:"foodInfo"`            //餐食标准
-	FoodPrice           float64 `json:"foodPrice"`           //餐食价格
-	HomestayPrice       float64 `json:"homestayPrice"`       //民宿价格
-	MarketHomestayPrice float64 `json:"marketHomestayPrice"` //民宿市场价格
+	Id                  int64    `json:"id"`
+	Title               string   `json:"title"`               //标题
+	SubTitle            string   `json:"subTitle"`            //副标题
+	Banner              string   `json:"banner"`              //轮播图，逗号分隔
+	Cover               string   `json:"cover"`               //封面（首图）
+	Images              []string `json:"images"`              //轮播图数组
+	Info                string   `json:"info"`                //介绍
+	PeopleNum           int64    `json:"peopleNum"`           //容纳人的数量
+	HomestayBusinessId  int64    `json:"homestayBusinessId"`  //店铺id
+	UserId              int64    `json:"userId"`              //房东id
+	RowState            int64    `json:"rowState"`            //0:下架 1:上架
+	RowType             int64    `json:"rowType"`             //售卖类型0：按房间出售 1:按人次出售
+	FoodInfo            string   `json:"foodInfo"`            //餐食标准
+	FoodPrice           float64  `json:"foodPrice"`           //餐食价格(元)
+	HomestayPrice       float64  `json:"homestayPrice"`       //民宿价格(元)
+	MarketHomestayPrice float64  `json:"marketHomestayPrice"` //民宿市场价格(元)
+	City                string   `json:"city"`                //城市
+	Address             string   `json:"address"`             //地址
+	Tags                []string `json:"tags"`                //标签
+	Longitude           float64  `json:"longitude"`           //经度
+	Latitude            float64  `json:"latitude"`            //纬度
+	Score               float64  `json:"score"`               //评分
+	CommentCount        int64    `json:"commentCount"`        //评价数
+}
+
+// 评分维度
+type ScoreStat {
+	Score    float64 `json:"score"`    //综合评分
+	Clean    float64 `json:"clean"`    //卫生
+	Location float64 `json:"location"` //位置
+	Service  float64 `json:"service"`  //服务
+	Count    int64   `json:"count"`    //评价数
+}
+
+// 城市
+type City {
+	Code  string `json:"code"`
+	Name  string `json:"name"`
+	Cover string `json:"cover"`
+	Count int64  `json:"count"`
+}
+
+// 首页轮播
+type Banner {
+	Id    int64  `json:"id"`
+	Cover string `json:"cover"`
+	Title string `json:"title"`
+	Link  string `json:"link"`
 }
 
 type (
@@ -57,6 +92,44 @@ type (
 		Id int64 `json:"id"`
 	}
 	HomestayDetailResp {
-		Homestay Homestay `json:"homestay"`
+		Homestay  Homestay     `json:"homestay"`
+		Images    []string     `json:"images"`
+		Business  HomestayBusiness `json:"business"`
+		ScoreStat ScoreStat    `json:"scoreStat"`
+	}
+)
+
+//=====================> 首页聚合 <=====================
+
+type (
+	HomeReq {
+		City string `json:"city,optional"`
+	}
+	HomeResp {
+		Cities       []City   `json:"cities"`       //热门城市
+		Banners      []Banner `json:"banners"`      //轮播图
+		HotTags      []string `json:"hotTags"`      //热门标签
+		Recommend    []Homestay `json:"recommend"`  //优选民宿
+		Guess        []Homestay `json:"guess"`      //猜你喜欢
+		RecommendCity string  `json:"recommendCity"`//当前推荐城市
+	}
+)
+
+//=====================> 搜索 / 筛选 <=====================
+
+type (
+	SearchReq {
+		Keyword   string  `json:"keyword,optional"`   //关键词，匹配标题/副标题/地址
+		City      string  `json:"city,optional"`      //城市
+		MinPrice  float64 `json:"minPrice,optional"`  //最低价(元)
+		MaxPrice  float64 `json:"maxPrice,optional"`  //最高价(元)
+		PeopleNum int64   `json:"peopleNum,optional"` //人数
+		SortBy    string  `json:"sortBy,optional"`    //default|priceAsc|priceDesc|score|new
+		Page      int64   `json:"page,optional"`
+		PageSize  int64   `json:"pageSize,optional"`
+	}
+	SearchResp {
+		List  []Homestay `json:"list"`
+		Total int64      `json:"total"`
 	}
 )

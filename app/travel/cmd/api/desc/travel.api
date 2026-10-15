@@ -1,8 +1,8 @@
 syntax = "v1"
 
-info(
-	title: "旅游服务"
-	desc: "旅游服务"
+info (
+	title:   "旅游服务"
+	desc:    "旅游服务"
 	version: "v1"
 )
 
@@ -13,47 +13,52 @@ import (
 )
 
 //=====================================> travel-homestay v1 <=================================
-
 //no need login
-@server(
+@server (
 	prefix: travel/v1
-	group: homestay
+	group:  homestay
 )
 service travel {
-	
+	@doc "首页聚合：城市、轮播、优选、猜你喜欢"
+	@handler home
+	post /homestay/home (HomeReq) returns (HomeResp)
+
+	@doc "民宿搜索/筛选"
+	@handler search
+	post /homestay/search (SearchReq) returns (SearchResp)
+
 	@doc "homestay room list"
 	@handler homestayList
 	post /homestay/homestayList (HomestayListReq) returns (HomestayListResp)
-	
+
 	@doc "boss all homestay room"
 	@handler businessList
 	post /homestay/businessList (BusinessListReq) returns (BusinessListResp)
-	
+
 	@doc "guess homestay room"
 	@handler guessList
 	post /homestay/guessList (GuessListReq) returns (GuessListResp)
-	
+
 	@doc "homestay room detail"
 	@handler homestayDetail
 	post /homestay/homestayDetail (HomestayDetailReq) returns (HomestayDetailResp)
-	
 }
 
 //====================================> travel-homestayBusiness v1 <====================================
 //no need login
-@server(
+@server (
 	prefix: travel/v1
-	group: homestayBussiness
+	group:  homestayBussiness
 )
 service travel {
 	@doc "good boss"
 	@handler goodBoss
 	post /homestayBussiness/goodBoss (GoodBossReq) returns (GoodBossResp)
-	
+
 	@doc "business list"
 	@handler homestayBussinessList
 	post /homestayBussiness/homestayBussinessList (HomestayBussinessListReq) returns (HomestayBussinessListResp)
-	
+
 	@doc "boss detail"
 	@handler homestayBussinessDetail
 	post /homestayBussiness/homestayBussinessDetail (HomestayBussinessDetailReq) returns (HomestayBussinessDetailResp)
@@ -61,12 +66,13 @@ service travel {
 
 //========================> homestay-homestayComment v1 <===================================
 //no need login
-@server(
+@server (
 	prefix: travel/v1
-	group: homestayComment
+	group:  homestayComment
 )
 service travel {
 	@doc "homestay comment list"
 	@handler commentList
 	post /homestayComment/commentList (CommentListReq) returns (CommentListResp)
 }
+

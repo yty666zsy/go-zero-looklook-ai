@@ -17,6 +17,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
+				Path:    "/homestay/home",
+				Handler: homestay.HomeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/homestay/search",
+				Handler: homestay.SearchHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/homestay/homestayList",
 				Handler: homestay.HomestayListHandler(serverCtx),
 			},

@@ -42,6 +42,7 @@ func (l *RegisterLogic) Register(in *usercenter.RegisterReq) (*usercenter.Regist
 	if err := l.svcCtx.UserModel.Trans(l.ctx, func(ctx context.Context, session sqlx.Session) error {
 		user := new(model.User)
 		user.Mobile = in.Mobile
+		user.Status = 1 // 默认正常，后台管理端可禁用
 		if len(in.Nickname) == 0 {
 			user.Nickname = tool.Krand(8, tool.KC_RAND_KIND_ALL)
 		}

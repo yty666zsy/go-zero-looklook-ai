@@ -21,6 +21,7 @@ type LoginLogic struct {
 
 var ErrGenerateTokenError = xerr.NewErrMsg("生成token失败")
 var ErrUsernamePwdError = xerr.NewErrMsg("账号或密码不正确")
+var ErrUserDisabledError = xerr.NewErrMsg("该账号已被禁用，请联系客服")
 
 func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic {
 	return &LoginLogic{
@@ -72,6 +73,11 @@ func (l *LoginLogic) loginByMobile(mobile, password string) (int64, error) {
 
 	if !(tool.Md5ByString(password) == user.Password) {
 		return 0, errors.Wrap(ErrUsernamePwdError, "密码匹配出错")
+	}
+
+	// 后台管理端可以把用户禁用（status = 0）
+	if user.Status != 1 {
+		return 0, errors.Wrapf(ErrUserDisabledError, "mobile:%s", mobile)
 	}
 
 	return user.Id, nil

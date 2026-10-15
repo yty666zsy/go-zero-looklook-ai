@@ -14,7 +14,17 @@ type CreateHomestayOrderResp struct {
 	OrderSn string `json:"orderSn"`
 }
 
+type CancelHomestayOrderReq struct {
+	Sn string `json:"sn"`
+}
+
+type CancelHomestayOrderResp struct {
+	Sn         string `json:"sn"`
+	TradeState int64  `json:"tradeState"`
+}
+
 type UserHomestayOrderListView struct {
+	Id              int64   `json:"id"`
 	Sn              string  `json:"sn"`              //单号
 	Title           string  `json:"title"`           //标题
 	SubTitle        string  `json:"subTitle"`        //副标题

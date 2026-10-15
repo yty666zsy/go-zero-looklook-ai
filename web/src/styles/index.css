@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============ 设计令牌 ============ */
+:root {
+  --c-bg: #f4f5f7;
+  --c-card: #ffffff;
+  --c-line: #e9ebee;
+  --c-ink: #22262b;
+  --c-ink-2: #5a6068;
+  --c-ink-3: #9aa0a8;
+  --c-fill: #eff1f3;
+  --c-gold: #c8a96a;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    margin: 0;
+    overscroll-behavior-y: none;
+  }
+
+  /* 移动端优先：桌面用居中容器，最大宽度 480px，避免拉伸变形 */
+  #app {
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--c-bg);
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.04);
+  }
+
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-card rounded-card shadow-card;
+  }
+
+  .chip {
+    @apply inline-flex items-center px-3 py-1.5 rounded-pill text-[13px] leading-none
+           bg-fill text-ink-2 transition-colors duration-200;
+  }
+
+  .chip-active {
+    @apply bg-ink text-white;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-btn font-medium
+           transition-transform duration-150 select-none;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn-primary {
+    @apply btn bg-ink text-white;
+  }
+
+  .btn-ghost {
+    @apply btn bg-fill text-ink;
+  }
+
+  .btn-line {
+    @apply btn border border-line-2 bg-card text-ink;
+  }
+
+  .divider {
+    @apply h-px w-full bg-line;
+  }
+
+  /* 骨架屏 */
+  .skeleton {
+    background: linear-gradient(90deg, #eef0f2 0%, #f7f8fa 40%, #eef0f2 80%);
+    background-size: 500px 100%;
+    @apply animate-shimmer rounded-lg;
+  }
+
+  /* 列表进场：错峰淡入 */
+  .stagger > * {
+    animation: fadeUp 0.32s var(--ease-out) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.06s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.1s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.14s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.18s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.22s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.26s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.3s; }
+
+  /* 一行省略 / 两行省略 */
+  .ellipsis {
+    @apply overflow-hidden whitespace-nowrap text-ellipsis;
+  }
+  .ellipsis-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ============ 路由转场 ============ */
+.route-fade-enter-active {
+  transition: opacity 0.22s var(--ease-smooth), transform 0.24s var(--ease-out);
+}
+.route-fade-leave-active {
+  transition: opacity 0.16s var(--ease-smooth);
+  position: absolute;
+  inset: 0;
+}
+.route-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.route-fade-leave-to {
+  opacity: 0;
+}
+
+/* 主内容区滚动 */
+.page-scroll {
+  height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 降级：尊重系统「减少动态效果」 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

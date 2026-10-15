@@ -86,6 +86,11 @@ func newThirdPaymentModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultThirdPay
 
 func (m *defaultThirdPaymentModel) Insert(ctx context.Context, session sqlx.Session, data *ThirdPayment) (sql.Result, error) {
 	data.DeleteTime = time.Unix(0, 0)
+	// pay_time / create_time ... 均为 NOT NULL datetime，零值 time.Time 会被驱动写成
+	// '0000-00-00'，在 MySQL 8 严格模式下报错（未支付时用 epoch 占位）
+	if data.PayTime.IsZero() {
+		data.PayTime = time.Unix(0, 0)
+	}
 	data.DelState = globalkey.DelStateNo
 	looklookPaymentThirdPaymentIdKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentIdPrefix, data.Id)
 	looklookPaymentThirdPaymentSnKey := fmt.Sprintf("%s%v", cacheLooklookPaymentThirdPaymentSnPrefix, data.Sn)

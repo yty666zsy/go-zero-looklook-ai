@@ -14,6 +14,9 @@ type ServiceContext struct {
 	//local
 	Config config.Config
 
+	//db
+	SqlConn sqlx.SqlConn
+
 	//rpc
 	UsercenterRpc usercenter.Usercenter
 	TravelRpc     travel.Travel
@@ -31,6 +34,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	return &ServiceContext{
 		Config: c,
+
+		SqlConn: sqlConn,
 
 		UsercenterRpc: usercenter.NewUsercenter(zrpc.MustNewClient(c.UsercenterRpcConf)),
 		TravelRpc:     travel.NewTravel(zrpc.MustNewClient(c.TravelRpcConf)),

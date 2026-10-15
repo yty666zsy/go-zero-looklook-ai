@@ -10,18 +10,24 @@ type HomestayComment {
 	Id         int64   `json:"id"`
 	HomestayId int64   `json:"homestayId"`
 	Content    string  `json:"content"`
-	Star       float64 `json:"star"`
-    UserId     int64   `json:"userId"`
+	Star       float64 `json:"star"` //综合星级
+	Clean      float64 `json:"clean"`
+	Location   float64 `json:"location"`
+	Service    float64 `json:"service"`
+	UserId     int64   `json:"userId"`
 	Nickname   string  `json:"nickname"`
 	Avatar     string  `json:"avatar"`
+	CreateTime int64   `json:"createTime"`
 }
 
 type (
 	CommentListReq {
-       lastId  int64 `json:"lastId"`
-       pageSize  int64 `json:"pageSize"`
+		HomestayId int64 `json:"homestayId"`
+		Page       int64 `json:"page,optional"`
+		PageSize   int64 `json:"pageSize,optional"`
 	}
 	CommentListResp {
-		List []HomestayComment `json:"list"`
+		List  []HomestayComment `json:"list"`
+		Total int64             `json:"total"`
 	}
 )

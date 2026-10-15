@@ -28,6 +28,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/homestayOrder/userHomestayOrderDetail",
 				Handler: homestayOrder.UserHomestayOrderDetailHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/homestayOrder/cancelHomestayOrder",
+				Handler: homestayOrder.CancelHomestayOrderHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
 		rest.WithPrefix("/order/v1"),

@@ -21,6 +21,7 @@ type (
 )
 type (
 	UserHomestayOrderListView {
+		Id              int64   `json:"id"`              //订单id
 		Sn              string  `json:"sn"`              //单号
 		Title           string  `json:"title"`           //标题
 		SubTitle        string  `json:"subTitle"`        //副标题
@@ -46,8 +47,7 @@ type (
 type (
 	UserHomestayOrderDetailReq {
 		Sn string `json:"sn"`
-	}
-	UserHomestayOrderDetailResp {
+	}	UserHomestayOrderDetailResp {
 		//订单基本信息
 		Sn                  string  `json:"sn"`                  //单号
 		UserId              int64   `json:"userId"`              //用户id
@@ -77,5 +77,15 @@ type (
 		//支付信息
 		PayTime int64  `json:"payTime"` //支付时间
 		PayType string `json:"payType"` //支付类型
+	}
+)
+
+type (
+	CancelHomestayOrderReq {
+		Sn string `json:"sn"`
+	}
+	CancelHomestayOrderResp {
+		Sn         string `json:"sn"`
+		TradeState int64  `json:"tradeState"`
 	}
 )

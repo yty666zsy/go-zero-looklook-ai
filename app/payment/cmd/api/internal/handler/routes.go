@@ -29,6 +29,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/thirdPayment/thirdPaymentWxPay",
 				Handler: thirdPayment.ThirdPaymentwxPayHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/thirdPayment/mockPay",
+				Handler: thirdPayment.MockPayHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
 		rest.WithPrefix("/payment/v1"),

@@ -33,4 +33,8 @@ service payment {
 	@doc "third payment：wechat pay"
 	@handler thirdPaymentwxPay
 	post /thirdPayment/thirdPaymentWxPay (ThirdPaymentWxPayReq) returns (ThirdPaymentWxPayResp)
+	
+	@doc "开发环境模拟支付"
+	@handler mockPay
+	post /thirdPayment/mockPay (MockPayReq) returns (MockPayResp)
 }

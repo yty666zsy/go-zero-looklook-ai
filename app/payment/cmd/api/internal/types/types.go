@@ -21,3 +21,12 @@ type ThirdPaymentWxPayCallbackReq struct {
 type ThirdPaymentWxPayCallbackResp struct {
 	ReturnCode string `json:"return_code"`
 }
+
+type MockPayReq struct {
+	OrderSn string `json:"orderSn"`
+}
+
+type MockPayResp struct {
+	OrderSn    string `json:"orderSn"`
+	TradeState int64  `json:"tradeState"`
+}

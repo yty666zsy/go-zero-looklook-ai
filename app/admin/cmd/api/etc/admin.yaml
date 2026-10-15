@@ -1,0 +1,42 @@
+Name: admin-api
+Host: 0.0.0.0
+Port: 1005
+Mode: dev
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 4012
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: admin-api
+  Endpoint: http://jaeger:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: admin-api
+  Level: error
+
+# 管理端使用独立的 JWT 密钥：C 端的 token 不能用来访问管理端接口
+JwtAuth:
+  AccessSecret: 2f1c9a70-5d43-4b8e-9a1f-7c6d0e2b84aa
+  AccessExpire: 86400
+
+Redis:
+  Host: redis:6379
+  Type: node
+  Pass: G62m50oigInC30sf
+
+# 管理端是只读+少量写操作的后台服务，直接连业务库（不经过 RPC），
+# 写操作后统一清理 go-zero 的模型缓存，保证 C 端立即可见。
+TravelDB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql:3306)/looklook_travel?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+OrderDB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql:3306)/looklook_order?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+PaymentDB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql:3306)/looklook_payment?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+UsercenterDB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql:3306)/looklook_usercenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai

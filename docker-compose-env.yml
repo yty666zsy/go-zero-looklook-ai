@@ -59,7 +59,7 @@ services:
     volumes:
         - ./data/grafana/data:/var/lib/grafana
     ports:
-        - "3001:3000"
+        - "3002:3000"
     networks:
         - looklook_net
 
@@ -186,6 +186,9 @@ services:
       TZ: Asia/Shanghai
       # root 密码 - root password
       MYSQL_ROOT_PASSWORD: PXDN93VRKUm8TeE7
+      # 允许从宿主机（非容器内）用 root 连接，本机开发服务直连 127.0.0.1:33069 时需要
+      # Allow root connections from the host machine (host dev services connect to 127.0.0.1:33069)
+      MYSQL_ROOT_HOST: '%'
     ports:
       - 33069:3306
     volumes:
@@ -208,9 +211,9 @@ services:
   #redis容器 - Redis container
   redis:
     image: redis:6.2.5
-    container_name: redis
+    container_name: looklook-redis
     ports:
-      - 36379:6379
+      - 36410:6379
     environment:
       # 时区上海 - Time zone Shanghai (Change if needed)
       TZ: Asia/Shanghai

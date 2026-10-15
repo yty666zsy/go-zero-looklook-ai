@@ -30,4 +30,8 @@ service order {
 	@doc "用户订单明细"
 	@handler userHomestayOrderDetail
 	post /homestayOrder/userHomestayOrderDetail (UserHomestayOrderDetailReq) returns (UserHomestayOrderDetailResp)
+	
+	@doc "取消民宿订单"
+	@handler cancelHomestayOrder
+	post /homestayOrder/cancelHomestayOrder (CancelHomestayOrderReq) returns (CancelHomestayOrderResp)
 }

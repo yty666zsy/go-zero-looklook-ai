@@ -56,9 +56,20 @@ func (l *UpdateHomestayOrderTradeStateLogic) UpdateHomestayOrderTradeState(in *p
 		return nil, errors.Wrapf(xerr.NewErrMsg("Failed to update homestay order status"), "Failed to update homestay order status db UpdateWithVersion err:%v , in : %v", err, in)
 	}
 
+	// 3.1、释放房源占用日历：订单取消 / 退款 / 过期后，这些日期重新可订（幂等）
+	if in.TradeState == model.HomestayOrderTradeStateCancel ||
+		in.TradeState == model.HomestayOrderTradeStateRefund ||
+		in.TradeState == model.HomestayOrderTradeStateExpire {
+		if n, err := l.svcCtx.Calendar.Release(l.ctx, homestayOrder.Sn); err != nil {
+			// 只记日志不影响主流程：巡检还能发现「日历与订单不一致」
+			logx.WithContext(l.ctx).Errorf("release homestay calendar fail, sn : %s , err : %v", homestayOrder.Sn, err)
+		} else if n > 0 {
+			logx.WithContext(l.ctx).Infof("release homestay calendar, sn : %s , dates : %d", homestayOrder.Sn, n)
+		}
+	}
+
 	//4、notify user
-	if in.TradeState == model.HomestayOrderTradeStateWaitUse {
-		payload, err := json.Marshal(jobtype.PaySuccessNotifyUserPayload{Order: homestayOrder})
+	if in.TradeState == model.HomestayOrderTradeStateWaitUse {		payload, err := json.Marshal(jobtype.PaySuccessNotifyUserPayload{Order: homestayOrder})
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("pay success notify user task json Marshal fail, err :%+v , sn : %s", err, homestayOrder.Sn)
 		} else {

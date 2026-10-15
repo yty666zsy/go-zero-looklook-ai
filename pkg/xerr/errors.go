@@ -2,6 +2,10 @@ package xerr
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/pkg/errors"
+	"google.golang.org/grpc/status"
 )
 
 /**
@@ -36,4 +40,39 @@ func NewErrCode(errCode uint32) *CodeError {
 
 func NewErrMsg(errMsg string) *CodeError {
 	return &CodeError{errCode: SERVER_COMMON_ERROR, errMsg: errMsg}
+}
+
+/**
+业务错误（可以原样展示给用户的提示）
+rpc 侧想给前端一句人话时用 NewErrBiz 构造，api 层用 BizMessage 取出来再返回。
+约定：业务错误不要再 errors.Wrap 追加技术细节（细节写日志），否则文案会带上一串内部信息。
+没带标记的错误（db / panic / 超时等）不会被透出，避免暴露底层实现。
+*/
+
+const BizMsgPrefix = "[biz]"
+
+// NewErrBiz 业务错误：文案可以直接给用户看。
+func NewErrBiz(errMsg string) *CodeError {
+	return &CodeError{errCode: SERVER_COMMON_ERROR, errMsg: BizMsgPrefix + errMsg}
+}
+
+// BizMessage 从（可能是 grpc 包装过的）错误里取出业务提示。
+func BizMessage(err error) (string, bool) {
+	if err == nil {
+		return "", false
+	}
+	if st, _ := status.FromError(errors.Cause(err)); st != nil {
+		if msg, ok := trimBizPrefix(st.Message()); ok {
+			return msg, true
+		}
+	}
+	return trimBizPrefix(err.Error())
+}
+
+func trimBizPrefix(s string) (string, bool) {
+	i := strings.Index(s, BizMsgPrefix)
+	if i < 0 {
+		return "", false
+	}
+	return strings.TrimSpace(s[i+len(BizMsgPrefix):]), true
 }

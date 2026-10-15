@@ -1,0 +1,111 @@
+Name: aiagent-api
+Host: 0.0.0.0
+Port: 1006
+Mode: dev
+
+# 流式对话是长连接（SSE），必须关掉 rest 默认的 3s 超时，否则回答会被拦腰截断
+Timeout: 0
+# 对话上下文可能较长（历史消息 + 知识库），放宽请求体上限
+MaxBytes: 4194304
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 4013
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: aiagent-api
+  Endpoint: http://jaeger:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+Log:
+  ServiceName: aiagent-api
+  Level: error
+
+# C 端 JWT（与 usercenter-api 同一密钥，用于识别 H5 用户）
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+  AccessExpire: 86400
+
+# 管理端 JWT（与 admin-api 同一密钥，用于识别后台管理员）
+AdminJwtAuth:
+  AccessSecret: 2f1c9a70-5d43-4b8e-9a1f-7c6d0e2b84aa
+  AccessExpire: 86400
+
+Redis:
+  Host: redis:6379
+  Type: node
+  Pass: G62m50oigInC30sf
+
+# AI 自己的库：会话 / 消息 / 知识库 / 待确认动作 / 工具审计
+AiDB:
+  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql:3306)/looklook_aiagent?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+# 工具即 API：Agent 不重复实现业务逻辑，而是调用现有服务，
+# 并把调用方的 JWT 一路透传下去，权限模型完全复用（C 端只能查自己的订单）。
+TravelAPI:
+  BaseUrl: http://127.0.0.1:1003
+  Timeout: 5000
+OrderAPI:
+  BaseUrl: http://127.0.0.1:1001
+  Timeout: 5000
+AdminAPI:
+  BaseUrl: http://127.0.0.1:1005
+  Timeout: 8000
+
+# LLM：Provider=mock 时使用本地规则规划器（无需 API Key 即可完整跑通
+# ReAct 工具调用 + RAG 抽取式回答）；Provider=openai 走 OpenAI 兼容协议，
+# DeepSeek / 通义千问 / vLLM / Ollama 都适用。
+#
+# 密钥不要写进仓库！二选一：
+#   1) 环境变量（推荐）：AI_AGENT_API_KEY=sk-xxx 启动 aiagent-api
+#   2) 本机配置：只改 deploy/local-dev/aiagent-api.yaml（该目录已 gitignore）
+# ApiKey 为空时自动降级为 mock 模式，功能全部可演示，零依赖。
+LLM:
+  Provider: openai
+  BaseUrl: https://api.deepseek.com/v1
+  ApiKey: ""
+  Model: deepseek-chat
+  Temperature: 0.3
+  TimeoutMs: 60000
+  MaxTokens: 1024
+
+# Agent 运行时约束
+Agent:
+  MaxSteps: 4
+  MaxHistory: 8
+  ToolTimeoutMs: 8000
+  ActionTTLSec: 300
+
+# RAG 检索参数
+Rag:
+  TopK: 4
+  MinScore: 1.2
+  MaxDocChars: 320
+
+# 无人值守任务：经营日报 + 异常巡检（主动型 Agent）
+# 服务自己按节奏跑，不等用户提问；全部只读采集 + 结论沉淀，
+# 涉及写操作时只生成「待确认动作」，仍需人工在前端点确认。
+Cron:
+  Enabled: true
+  # 启动后先跑一次，方便本地演示（不用等到整点）
+  RunOnStart: true
+  # 异常巡检间隔（分钟）
+  PatrolIntervalMin: 30
+  # 每天几点生成经营日报（0-23，服务器本地时间）
+  ReportHour: 9
+  # 内部服务账号 adminId：ai-agent（deploy/sql/looklook_seed_aiagent.sql 内插入）
+  # 无人值守调用管理端接口时以它的身份发起，审计可追溯到具体账号
+  ServiceUid: 3
+  # 单条规则单次最多产出多少条告警，避免刷屏
+  MaxAlertsPerRule: 3
+  # ---------- 巡检规则阈值 ----------
+  PendingPayMin: 30
+  IdleHomestayDays: 14
+  LowScore: 4.5
+  MinCommentCount: 5
+  HighCancelRate: 0.6
+  MinOrderForCancel: 3

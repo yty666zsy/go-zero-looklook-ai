@@ -58,3 +58,38 @@ CREATE TABLE `homestay_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='每一间民宿';
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- 房源占用日历（高并发防超卖）
+-- 逐日一行，(homestay_id, occupy_date) 唯一：民宿是整套房源，同一房源同一晚只能卖一次。
+-- 下单：在房源粒度分布式锁里占位（和订单同一个事务），任一晚冲突就整单失败；
+-- 释放：订单取消 / 退款 / 过期时删掉对应行，日期重新可订。
+-- 唯一键是最终兜底：即使 Redis 锁失效或被绕过，数据库层面也不会超卖。
+-- ----------------------------
+DROP TABLE IF EXISTS `homestay_calendar`;
+CREATE TABLE `homestay_calendar` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `homestay_id` bigint NOT NULL COMMENT '房源id',
+  `occupy_date` date NOT NULL COMMENT '占用的那一晚',
+  `order_sn` varchar(32) NOT NULL DEFAULT '' COMMENT '占用它的订单号',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_homestay_date` (`homestay_id`,`occupy_date`),
+  KEY `idx_sn` (`order_sn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='房源日历占用（防超卖）';
+
+-- 回填：把现存的有效订单（待支付/未使用/已使用）展开成逐日占用，离店当天不占用。
+-- 已有历史冲突订单用 INSERT IGNORE 跳过（保留先来的那一笔）。
+INSERT IGNORE INTO `homestay_calendar` (`homestay_id`,`occupy_date`,`order_sn`)
+SELECT `homestay_id`, `occupy_date`, `order_sn` FROM (
+  WITH RECURSIVE `days` AS (
+    SELECT `homestay_id` AS hid, `sn` AS osn, DATE(`live_start_date`) AS `d`, DATE(`live_end_date`) AS `e`
+      FROM `homestay_order`
+     WHERE `del_state` = 0 AND `trade_state` IN (0,1,2) AND `live_end_date` > `live_start_date`
+    UNION ALL
+    SELECT `hid`, `osn`, `d` + INTERVAL 1 DAY, `e` FROM `days` WHERE `d` + INTERVAL 1 DAY < `e`
+  )
+  SELECT `hid` AS `homestay_id`, `d` AS `occupy_date`, `osn` AS `order_sn` FROM `days`
+) AS `occupied`;
+

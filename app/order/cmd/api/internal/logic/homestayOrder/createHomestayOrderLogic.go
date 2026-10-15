@@ -53,7 +53,11 @@ func (l *CreateHomestayOrderLogic) CreateHomestayOrder(req types.CreateHomestayO
 		Remark:        req.Remark,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrMsg("create homestay order fail"), "create homestay order rpc CreateHomestayOrder fail req: %+v , err : %v ", req, err)
+		// rpc 侧的业务提示（如「所选日期已被预订」）透出给用户；其余按通用错误处理
+		if msg, ok := xerr.BizMessage(err); ok {
+			return nil, errors.Wrap(xerr.NewErrMsg(msg), "create homestay order rpc biz fail")
+		}
+		return nil, errors.Wrapf(xerr.NewErrMsg("下单失败，请稍后重试"), "create homestay order rpc CreateHomestayOrder fail req: %+v , err : %v ", req, err)
 	}
 
 	return &types.CreateHomestayOrderResp{

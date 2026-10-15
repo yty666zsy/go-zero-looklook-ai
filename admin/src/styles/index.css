@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============ 设计令牌（与 H5 端一致） ============ */
+:root {
+  --c-bg: #f4f5f7;
+  --c-card: #ffffff;
+  --c-line: #e9ebee;
+  --c-ink: #22262b;
+  --c-ink-2: #5a6068;
+  --c-ink-3: #9aa0a8;
+  --c-fill: #eff1f3;
+  --c-gold: #c8a96a;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  --sidebar-w: 224px;
+  --topbar-h: 60px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    margin: 0;
+  }
+
+  #app {
+    min-height: 100vh;
+  }
+
+  /* 表格里的数字用等宽字体，竖向更容易对齐 */
+  .num {
+    @apply font-mono tabular-nums;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #d8dce1;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #c7ccd2;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-card rounded-card border border-line shadow-card;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-btn font-medium
+           transition-all duration-200 ease-smooth select-none whitespace-nowrap;
+  }
+  .btn:active {
+    transform: scale(0.975);
+  }
+  .btn:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+  .btn:disabled:active {
+    transform: none;
+  }
+
+  .btn-primary {
+    @apply btn bg-ink text-white hover:bg-[#31363d];
+  }
+  .btn-ghost {
+    @apply btn bg-fill text-ink hover:bg-[#e6e9ec];
+  }
+  .btn-line {
+    @apply btn border border-line-2 bg-card text-ink hover:border-ink-4 hover:bg-fill-2;
+  }
+  .btn-sm {
+    @apply h-8 px-3 text-[13px];
+  }
+  .btn-md {
+    @apply h-9 px-4 text-sm;
+  }
+  .btn-lg {
+    @apply h-11 px-5 text-[15px];
+  }
+  .btn-danger {
+    @apply btn border border-[#E7D3D1] bg-[#FBF6F5] text-st-err hover:bg-[#F6EDEC];
+  }
+
+  .input {
+    @apply h-9 w-full rounded-btn border border-line-2 bg-card px-3 text-sm text-ink
+           outline-none transition-all duration-200 placeholder:text-ink-4
+           focus:border-ink-2 focus:ring-4 focus:ring-black/[.04];
+  }
+
+  .select {
+    @apply input appearance-none pr-8 bg-no-repeat cursor-pointer;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 8l3-3.5' fill='none' stroke='%239AA0A8' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 0.65rem center;
+  }
+
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-[12px] leading-[18px] font-medium;
+  }
+
+  .table-wrap {
+    @apply overflow-x-auto;
+  }
+
+  .tbl {
+    @apply w-full border-collapse text-sm;
+  }
+  .tbl thead th {
+    @apply sticky top-0 z-10 bg-fill-2 px-4 py-2.5 text-left text-[12px] font-medium
+           uppercase tracking-wide text-ink-3 whitespace-nowrap;
+  }
+  .tbl tbody td {
+    @apply border-t border-line px-4 py-3 align-middle text-ink-2;
+  }
+  .tbl tbody tr {
+    @apply transition-colors duration-150 hover:bg-fill-2/70;
+  }
+
+  .divider {
+    @apply h-px w-full bg-line;
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #eef0f2 0%, #f7f8fa 40%, #eef0f2 80%);
+    background-size: 500px 100%;
+    @apply animate-shimmer rounded-md;
+  }
+
+  .stagger > * {
+    animation: fadeUp 0.3s var(--ease-out) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.05s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.08s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.11s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.14s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.17s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.2s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.23s; }
+
+  .ellipsis {
+    @apply overflow-hidden whitespace-nowrap text-ellipsis;
+  }
+}
+
+/* ============ 路由转场 ============ */
+.route-fade-enter-active {
+  transition: opacity 0.2s var(--ease-smooth), transform 0.24s var(--ease-out);
+}
+.route-fade-leave-active {
+  transition: opacity 0.14s var(--ease-smooth);
+}
+.route-fade-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.route-fade-leave-to {
+  opacity: 0;
+}
+
+/* 弹层 */
+.overlay-enter-active,
+.overlay-leave-active {
+  transition: opacity 0.2s var(--ease-smooth);
+}
+.overlay-enter-from,
+.overlay-leave-to {
+  opacity: 0;
+}
+.dialog-enter-active {
+  transition: opacity 0.2s var(--ease-out), transform 0.22s var(--ease-out);
+}
+.dialog-leave-active {
+  transition: opacity 0.14s var(--ease-smooth), transform 0.14s var(--ease-smooth);
+}
+.dialog-enter-from,
+.dialog-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,411 @@
+syntax = "v1"
+
+info (
+	title:   "后台管理"
+	desc:    "looklook 民宿预订 · 后台管理服务"
+	version: "v1"
+)
+
+type (
+	// ---------- 通用 ----------
+	PageResp {
+		Page     int64 `json:"page"`
+		PageSize int64 `json:"pageSize"`
+		Total    int64 `json:"total"`
+	}
+	// ---------- 管理员 ----------
+	AdminInfo {
+		Id            int64  `json:"id"`
+		Username      string `json:"username"`
+		Nickname      string `json:"nickname"`
+		Role          string `json:"role"`
+		LastLoginTime int64  `json:"lastLoginTime"`
+	}
+	AdminLoginReq {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	AdminLoginResp {
+		AccessToken  string    `json:"accessToken"`
+		AccessExpire int64     `json:"accessExpire"`
+		RefreshAfter int64     `json:"refreshAfter"`
+		Admin        AdminInfo `json:"admin"`
+	}
+	AdminProfileReq  {}
+	AdminProfileResp {
+		Admin AdminInfo `json:"admin"`
+	}
+	AdminChangePasswordReq {
+		OldPassword string `json:"oldPassword"`
+		NewPassword string `json:"newPassword"`
+	}
+	AdminChangePasswordResp {
+		Ok bool `json:"ok"`
+	}
+	// ---------- 数据看板 ----------
+	DashboardOverviewReq  {}
+	DashboardOverviewResp {
+		TodayOrderCount     int64   `json:"todayOrderCount"`
+		TodayGmv            float64 `json:"todayGmv"`
+		YesterdayOrderCount int64   `json:"yesterdayOrderCount"`
+		YesterdayGmv        float64 `json:"yesterdayGmv"`
+		TotalOrderCount     int64   `json:"totalOrderCount"`
+		TotalGmv            float64 `json:"totalGmv"`
+		UserCount           int64   `json:"userCount"`
+		HomestayCount       int64   `json:"homestayCount"`
+		BusinessCount       int64   `json:"businessCount"`
+		CommentCount        int64   `json:"commentCount"`
+		WaitPayCount        int64   `json:"waitPayCount"`
+		PaidCount           int64   `json:"paidCount"`
+		CancelCount         int64   `json:"cancelCount"`
+	}
+	TrendPoint {
+		Date       string  `json:"date"`
+		OrderCount int64   `json:"orderCount"`
+		Gmv        float64 `json:"gmv"`
+	}
+	DashboardTrendReq {
+		Days int64 `json:"days,default=7"`
+	}
+	DashboardTrendResp {
+		List []TrendPoint `json:"list"`
+	}
+	CityStat {
+		City  string  `json:"city"`
+		Count int64   `json:"count"`
+		Gmv   float64 `json:"gmv"`
+	}
+	DashboardCityReq  {}
+	DashboardCityResp {
+		List []CityStat `json:"list"`
+	}
+	StateStat {
+		TradeState int64 `json:"tradeState"`
+		Count      int64 `json:"count"`
+	}
+	DashboardStateReq  {}
+	DashboardStateResp {
+		List []StateStat `json:"list"`
+	}
+	// ---------- 民宿管理 ----------
+	HomestayItem {
+		Id                  int64   `json:"id"`
+		Title               string  `json:"title"`
+		SubTitle            string  `json:"subTitle"`
+		Cover               string  `json:"cover"`
+		City                string  `json:"city"`
+		Address             string  `json:"address"`
+		Tags                string  `json:"tags"`
+		PeopleNum           int64   `json:"peopleNum"`
+		HomestayPrice       float64 `json:"homestayPrice"`
+		MarketHomestayPrice float64 `json:"marketHomestayPrice"`
+		FoodInfo            string  `json:"foodInfo"`
+		FoodPrice           float64 `json:"foodPrice"`
+		RowState            int64   `json:"rowState"`
+		Score               float64 `json:"score"`
+		CommentCount        int64   `json:"commentCount"`
+		BusinessId          int64   `json:"businessId"`
+		BusinessTitle       string  `json:"businessTitle"`
+		CreateTime          int64   `json:"createTime"`
+	}
+	HomestayListReq {
+		Page     int64  `json:"page,default=1"`
+		PageSize int64  `json:"pageSize,default=10"`
+		Keyword  string `json:"keyword,optional"`
+		City     string `json:"city,optional"`
+		RowState int64  `json:"rowState,default=-1"`
+	}
+	HomestayListResp {
+		List     []HomestayItem `json:"list"`
+		Page     int64          `json:"page"`
+		PageSize int64          `json:"pageSize"`
+		Total    int64          `json:"total"`
+	}
+	HomestayDetailReq {
+		Id int64 `json:"id"`
+	}
+	HomestayDetailResp {
+		Homestay HomestayItem `json:"homestay"`
+	}
+	HomestayUpdateStateReq {
+		Id       int64 `json:"id"`
+		RowState int64 `json:"rowState"`
+	}
+	HomestayUpdateStateResp {
+		Id       int64 `json:"id"`
+		RowState int64 `json:"rowState"`
+	}
+	HomestayUpdatePriceReq {
+		Id                  int64   `json:"id"`
+		HomestayPrice       float64 `json:"homestayPrice"`
+		MarketHomestayPrice float64 `json:"marketHomestayPrice,optional"`
+	}
+	HomestayUpdatePriceResp {
+		Id int64 `json:"id"`
+	}
+	CityOption {
+		City  string `json:"city"`
+		Count int64  `json:"count"`
+	}
+	HomestayCityReq  {}
+	HomestayCityResp {
+		List []CityOption `json:"list"`
+	}
+	// ---------- 订单管理 ----------
+	OrderItem {
+		Id              int64   `json:"id"`
+		Sn              string  `json:"sn"`
+		UserId          int64   `json:"userId"`
+		UserMobile      string  `json:"userMobile"`
+		HomestayId      int64   `json:"homestayId"`
+		Title           string  `json:"title"`
+		SubTitle        string  `json:"subTitle"`
+		Cover           string  `json:"cover"`
+		LiveStartDate   int64   `json:"liveStartDate"`
+		LiveEndDate     int64   `json:"liveEndDate"`
+		LivePeopleNum   int64   `json:"livePeopleNum"`
+		NeedFood        int64   `json:"needFood"`
+		HomestayPrice   float64 `json:"homestayPrice"`
+		FoodPrice       float64 `json:"foodPrice"`
+		OrderTotalPrice float64 `json:"orderTotalPrice"`
+		TradeState      int64   `json:"tradeState"`
+		TradeCode       string  `json:"tradeCode"`
+		Remark          string  `json:"remark"`
+		CreateTime      int64   `json:"createTime"`
+	}
+	OrderListReq {
+		Page       int64  `json:"page,default=1"`
+		PageSize   int64  `json:"pageSize,default=10"`
+		TradeState int64  `json:"tradeState,default=-99"`
+		Keyword    string `json:"keyword,optional"`
+	}
+	OrderListResp {
+		List     []OrderItem `json:"list"`
+		Page     int64       `json:"page"`
+		PageSize int64       `json:"pageSize"`
+		Total    int64       `json:"total"`
+		SumPrice float64     `json:"sumPrice"`
+	}
+	OrderDetailReq {
+		Sn string `json:"sn"`
+	}
+	OrderDetailResp {
+		Order OrderItem `json:"order"`
+	}
+	OrderForceCancelReq {
+		Sn     string `json:"sn"`
+		Reason string `json:"reason,optional"`
+	}
+	OrderForceCancelResp {
+		Sn         string `json:"sn"`
+		TradeState int64  `json:"tradeState"`
+	}
+	OrderStatReq  {}
+	OrderStatResp {
+		All     int64 `json:"all"`
+		WaitPay int64 `json:"waitPay"`
+		WaitUse int64 `json:"waitUse"`
+		Used    int64 `json:"used"`
+		Cancel  int64 `json:"cancel"`
+		Refund  int64 `json:"refund"`
+		Expired int64 `json:"expired"`
+	}
+	// ---------- 用户管理 ----------
+	UserItem {
+		Id         int64  `json:"id"`
+		Mobile     string `json:"mobile"`
+		Nickname   string `json:"nickname"`
+		Avatar     string `json:"avatar"`
+		Sex        int64  `json:"sex"`
+		Info       string `json:"info"`
+		Status     int64  `json:"status"`
+		OrderCount int64  `json:"orderCount"`
+		CreateTime int64  `json:"createTime"`
+	}
+	UserListReq {
+		Page     int64  `json:"page,default=1"`
+		PageSize int64  `json:"pageSize,default=10"`
+		Keyword  string `json:"keyword,optional"`
+	}
+	UserListResp {
+		List     []UserItem `json:"list"`
+		Page     int64      `json:"page"`
+		PageSize int64      `json:"pageSize"`
+		Total    int64      `json:"total"`
+	}
+	UserUpdateStatusReq {
+		Id     int64 `json:"id"`
+		Status int64 `json:"status"`
+	}
+	UserUpdateStatusResp {
+		Id     int64 `json:"id"`
+		Status int64 `json:"status"`
+	}
+	// ---------- 评价管理 ----------
+	CommentItem {
+		Id            int64     `json:"id"`
+		HomestayId    int64     `json:"homestayId"`
+		HomestayTitle string    `json:"homestayTitle"`
+		UserId        int64     `json:"userId"`
+		Nickname      string    `json:"nickname"`
+		Avatar        string    `json:"avatar"`
+		Content       string    `json:"content"`
+		Star          []float64 `json:"star"`
+		Score         float64   `json:"score"`
+		CreateTime    int64     `json:"createTime"`
+	}
+	CommentListReq {
+		Page       int64  `json:"page,default=1"`
+		PageSize   int64  `json:"pageSize,default=10"`
+		HomestayId int64  `json:"homestayId,optional"`
+		Keyword    string `json:"keyword,optional"`
+	}
+	CommentListResp {
+		List     []CommentItem `json:"list"`
+		Page     int64         `json:"page"`
+		PageSize int64         `json:"pageSize"`
+		Total    int64         `json:"total"`
+	}
+	CommentDeleteReq {
+		Id int64 `json:"id"`
+	}
+	CommentDeleteResp {
+		Id int64 `json:"id"`
+	}
+)
+
+//========================> 登录 <=========================
+@server (
+	prefix: admin/v1
+	group:  auth
+)
+service admin {
+	@doc "管理员登录"
+	@handler adminLogin
+	post /admin/login (AdminLoginReq) returns (AdminLoginResp)
+}
+
+//========================> 管理员自身 <=========================
+@server (
+	prefix: admin/v1
+	group:  admin
+	jwt:    JwtAuth
+)
+service admin {
+	@doc "当前登录管理员信息"
+	@handler adminProfile
+	post /admin/profile (AdminProfileReq) returns (AdminProfileResp)
+
+	@doc "修改密码"
+	@handler adminChangePassword
+	post /admin/changePassword (AdminChangePasswordReq) returns (AdminChangePasswordResp)
+}
+
+//========================> 数据看板 <=========================
+@server (
+	prefix: admin/v1
+	group:  dashboard
+	jwt:    JwtAuth
+)
+service admin {
+	@doc "核心指标"
+	@handler dashboardOverview
+	post /dashboard/overview (DashboardOverviewReq) returns (DashboardOverviewResp)
+
+	@doc "近 N 日下单趋势"
+	@handler dashboardTrend
+	post /dashboard/trend (DashboardTrendReq) returns (DashboardTrendResp)
+
+	@doc "城市分布"
+	@handler dashboardCity
+	post /dashboard/city (DashboardCityReq) returns (DashboardCityResp)
+
+	@doc "订单状态分布"
+	@handler dashboardOrderState
+	post /dashboard/orderState (DashboardStateReq) returns (DashboardStateResp)
+}
+
+//========================> 民宿管理 <=========================
+@server (
+	prefix: admin/v1
+	group:  homestay
+	jwt:    JwtAuth
+)
+service admin {
+	@doc "民宿列表"
+	@handler homestayList
+	post /homestay/list (HomestayListReq) returns (HomestayListResp)
+
+	@doc "民宿详情"
+	@handler homestayDetail
+	post /homestay/detail (HomestayDetailReq) returns (HomestayDetailResp)
+
+	@doc "上架/下架"
+	@handler homestayUpdateState
+	post /homestay/updateState (HomestayUpdateStateReq) returns (HomestayUpdateStateResp)
+
+	@doc "调整价格"
+	@handler homestayUpdatePrice
+	post /homestay/updatePrice (HomestayUpdatePriceReq) returns (HomestayUpdatePriceResp)
+
+	@doc "城市下拉选项"
+	@handler homestayCityOptions
+	post /homestay/cityOptions (HomestayCityReq) returns (HomestayCityResp)
+}
+
+//========================> 订单管理 <=========================
+@server (
+	prefix: admin/v1
+	group:  order
+	jwt:    JwtAuth
+)
+service admin {
+	@doc "订单列表"
+	@handler orderList
+	post /order/list (OrderListReq) returns (OrderListResp)
+
+	@doc "订单详情"
+	@handler orderDetail
+	post /order/detail (OrderDetailReq) returns (OrderDetailResp)
+
+	@doc "强制取消订单"
+	@handler orderForceCancel
+	post /order/forceCancel (OrderForceCancelReq) returns (OrderForceCancelResp)
+
+	@doc "订单状态统计"
+	@handler orderStat
+	post /order/stat (OrderStatReq) returns (OrderStatResp)
+}
+
+//========================> 用户管理 <=========================
+@server (
+	prefix: admin/v1
+	group:  user
+	jwt:    JwtAuth
+)
+service admin {
+	@doc "用户列表"
+	@handler userList
+	post /user/list (UserListReq) returns (UserListResp)
+
+	@doc "启用/禁用用户"
+	@handler userUpdateStatus
+	post /user/updateStatus (UserUpdateStatusReq) returns (UserUpdateStatusResp)
+}
+
+//========================> 评价管理 <=========================
+@server (
+	prefix: admin/v1
+	group:  comment
+	jwt:    JwtAuth
+)
+service admin {
+	@doc "评价列表"
+	@handler commentList
+	post /comment/list (CommentListReq) returns (CommentListResp)
+
+	@doc "删除评价"
+	@handler commentDelete
+	post /comment/delete (CommentDeleteReq) returns (CommentDeleteResp)
+}
+
