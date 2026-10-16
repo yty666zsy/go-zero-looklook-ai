@@ -26,6 +26,8 @@
 | `deploy/script/dev/smoke-admin.ps1` | 管理端接口冒烟（39 项断言，回归必跑） |
 | `deploy/script/dev/smoke-aiagent.ps1` | AI Agent 冒烟（88 项断言，回归必跑） |
 | `deploy/script/dev/bench-order.ps1` | 并发下单压测：检验「同一房源同一晚不超卖」 |
+| `deploy/script/dev/shot-readme.mjs` | 无头 Chrome 抓界面截图，输出到 `doc/screenshots/`（README 用） |
+| `doc/screenshots/` | README 里引用的界面截图 |
 | `deploy/script/seed/main.mjs` | 生成演示数据 SQL |
 | `deploy/sql/looklook_seed_travel.sql` | 演示数据（导入 `looklook_travel`） |
 | `deploy/sql/looklook_seed_usercenter.sql` | 演示用户（导入 `looklook_usercenter`） |

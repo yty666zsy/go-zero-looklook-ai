@@ -23,6 +23,34 @@
 - 管理端「AI 值守」每天生成经营日报，异常巡检（超卖/待支付超时/低价/高取消率…）自动产出告警并能一键处置。
 - 并发压测：100 个请求抢同一套房源的同一晚 → **只成功 1 单，0 超卖**（修复前是 40 单全成功）。
 
+### 界面预览
+
+> 下面全部是从**本机真实运行**的页面上抓的（无头 Chrome + CDP，脚本：`node deploy/script/dev/shot-readme.mjs`），点开看大图。
+
+**C 端 H5**（`web/`，手机视口）：首页 · 搜索列表 · 房源详情 · 小栖答话（真调工具）
+
+<p align="center">
+  <img src="doc/screenshots/web-home.png" width="24%" alt="C 端首页" />
+  <img src="doc/screenshots/web-search.png" width="24%" alt="搜索列表" />
+  <img src="doc/screenshots/web-detail.png" width="24%" alt="房源详情" />
+  <img src="doc/screenshots/web-ai-chat.png" width="24%" alt="小栖查订单" />
+</p>
+
+**AI 写操作：必须人工二次确认**（点「确认执行」才会真的调工具，且一次性令牌 + 审计留痕）
+
+<p align="center">
+  <img src="doc/screenshots/web-ai-confirm.png" width="26%" alt="取消订单的二次确认卡片" />
+</p>
+
+**运营管理后台**（`admin/`，桌面视口）：数据看板 · AI 值守（异常巡检）· 经营日报 · 运营 Copilot
+
+<p align="center">
+  <img src="doc/screenshots/admin-dashboard.png" width="49%" alt="数据看板" />
+  <img src="doc/screenshots/admin-monitor.png" width="49%" alt="AI 值守异常巡检" />
+  <img src="doc/screenshots/admin-report.png" width="49%" alt="经营日报" />
+  <img src="doc/screenshots/admin-copilot.png" width="49%" alt="运营 Copilot" />
+</p>
+
 ---
 
 ## 二、技术栈
@@ -127,6 +155,9 @@ pwsh -File deploy/script/dev/bench-order.ps1      # 50 并发抢同一晚，验�
 结论：PASS —— 只有 1 单成功（容量 1 晚），无超卖
 ```
 
+> 改了前端 UI 想更新 README 里的界面截图：确保后端 + 两个前端都在跑，执行
+> `node deploy/script/dev/shot-readme.mjs`，会自动覆盖 `doc/screenshots/` 下的图。
+
 ---
 
 ## 五、AI 用真模型（可选）
@@ -161,9 +192,11 @@ web/                     C 端 H5（Vue3 + Vite）
 admin/                   运营管理后台（Vue3 + Vite）
 deploy/
   sql/                   建表 + 演示数据 SQL
-  script/dev/            本机开发脚本（db-init / run-local / smoke / bench / 生成配置）
+  script/dev/            本机开发脚本（db-init / run-local / smoke / bench / 生成配置 / README 截图）
   local-dev/             本机运行配置与日志（自动生成，不进仓库）
-doc/                     上游原版文档（中文 / 英文）
+doc/
+  screenshots/           README 里的界面截图（shot-readme.mjs 生成）
+  中文 / 英文            上游原版文档
 README-LOCAL-DEV.md      完整本机开发指南（端口、数据模型、接口清单、FAQ）
 ```
 

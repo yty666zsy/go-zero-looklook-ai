@@ -9,8 +9,8 @@ const route = useRoute()
 
 // 登录页不展示助手入口
 const hidden = computed(() => route.name === 'login')
-// 有底部 TabBar 的页面把按钮抬高一点，避免遮挡
-const bottom = computed(() => (route.meta.tab ? 84 : 26))
+// 有底部 TabBar / 固定操作栏的页面把按钮抬高一点，避免遮挡
+const bottom = computed(() => (route.meta.tab ? 84 : route.meta.bottomBar ? 88 : 26))
 </script>
 
 <template>

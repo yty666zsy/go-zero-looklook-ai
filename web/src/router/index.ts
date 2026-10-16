@@ -7,18 +7,20 @@ declare module 'vue-router' {
     title?: string
     tab?: boolean
     auth?: boolean
+    /** 页面底部有固定操作栏（如「立即预订」），悬浮球需要抬高避免遮挡 */
+    bottomBar?: boolean
   }
 }
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: () => import('@/pages/Home.vue'), meta: { title: '首页', tab: true } },
   { path: '/search', name: 'search', component: () => import('@/pages/Search.vue'), meta: { title: '找民宿' } },
-  { path: '/detail/:id', name: 'detail', component: () => import('@/pages/Detail.vue'), meta: { title: '民宿详情' } },
+  { path: '/detail/:id', name: 'detail', component: () => import('@/pages/Detail.vue'), meta: { title: '民宿详情', bottomBar: true } },
   {
     path: '/confirm/:id',
     name: 'confirm',
     component: () => import('@/pages/Confirm.vue'),
-    meta: { title: '确认订单', auth: true },
+    meta: { title: '确认订单', auth: true, bottomBar: true },
   },
   { path: '/pay/:sn', name: 'pay', component: () => import('@/pages/Pay.vue'), meta: { title: '收银台', auth: true } },
   { path: '/orders', name: 'orders', component: () => import('@/pages/Orders.vue'), meta: { title: '订单', tab: true, auth: true } },
@@ -26,7 +28,7 @@ const routes: RouteRecordRaw[] = [
     path: '/orders/:sn',
     name: 'orderDetail',
     component: () => import('@/pages/OrderDetail.vue'),
-    meta: { title: '订单详情', auth: true },
+    meta: { title: '订单详情', auth: true, bottomBar: true },
   },
   { path: '/mine', name: 'mine', component: () => import('@/pages/Mine.vue'), meta: { title: '我的', tab: true } },
   { path: '/login', name: 'login', component: () => import('@/pages/Login.vue'), meta: { title: '登录' } },
